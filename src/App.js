@@ -72,7 +72,7 @@ function App() {
               </h3>
               
               <h4 className='text-lg md:text-xl lg:text-2xl text-gray-700 mb-9'>
-              Work in top tech, get promoted, get paid your worth
+              Work in top tech, level up, get paid your worth
               </h4>
               <div className="flex flex-row p-2 text-xs md:text-md lg:text-lg">
                   <input 
