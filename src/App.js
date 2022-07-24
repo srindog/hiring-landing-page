@@ -8,15 +8,31 @@ import screening from "./animations/56922-code-typing-concept.json"
 import work from "./animations/103520-freelancer-working-on-laptop.json"
 import progression from "./animations/90507-money-saving.json"
 
-
 import Animation from './components/Animation'
+import { EmailsService } from './services/DatabaseService';
+import { AnonymousAuthService } from './services/AuthService';
+
+import Modal from 'react-modal';
 
 const COMPANY_NAME = 'Orbit'
+
+const customStyles = {
+  content: {
+    top: '50%',
+    left: '50%',
+    right: 'auto',
+    bottom: 'auto',
+    marginRight: '-30%',
+    transform: 'translate(-50%, -50%)',
+    boxShadow: '0 4px 6px -1px rgb(0 0 0 / 0.1), 0 2px 4px -2px rgb(0 0 0 / 0.1)'
+    
+  },
+};
 
 function App() {
   const [email, setEmail] = useState('')
   const [isValidEmail, setIsValidEmail] = useState(true)
-
+  const [showThankYou, setShowThankYou] = useState(false)
   const validateEmail = (email) => {
     validator.isEmail(email) ? setIsValidEmail(true) : setIsValidEmail(false)
   }
@@ -25,6 +41,25 @@ function App() {
     let email = e.target.value
     setEmail(email)
     validateEmail(email)
+  }
+
+  const onEmailSubmit = async () => {
+    if (isValidEmail && email.length > 0) {
+      await AnonymousAuthService.signInAnonymously()
+      await EmailsService.create({'email': email})
+      setShowThankYou(true)
+      setEmail('')
+    } else {
+      setIsValidEmail(false)
+    }
+  }
+
+  function openThankYouModal() {
+    setShowThankYou(true);
+  }
+
+  function closeThankYouModal() {
+    setShowThankYou(false);
   }
 
 
@@ -74,17 +109,21 @@ function App() {
               <h4 className='text-lg md:text-xl lg:text-2xl text-gray-700 mb-9'>
               Work in top tech, level up, get paid your worth
               </h4>
-              <div className="flex flex-row p-2 text-xs md:text-md lg:text-lg">
+              <div className="flex flex-row text-sm md:text-md lg:text-lg font-normal">
                   <input 
-                    className='pl-3 mr-1 rounded-lg outline-emerald-400'
+                    className='pl-3 pr-20 outline-emerald-400 rounded-l-lg'
                     value={email}
                     onChange={onEmailChange}
+                    placeholder='Enter your email'
                   />         
-                <button className='bg-emerald-400 p-2 text-gray-700 rounded-lg border-2 border-emerald-400 hover:border-emerald-200 active:bg-emerald-500'>
+                <button 
+                  className='rounded-r-lg bg-emerald-400 p-2 text-sm md:text-md lg:text-lg text-gray-700 border-2 border-emerald-400 hover:border-emerald-200 active:bg-emerald-500'
+                  onClick={onEmailSubmit}
+                >
                   Sign up for early access!
                 </button>
               </div>
-              {!isValidEmail && <span className='text-red-600'>Please enter a valid email!</span>}
+              {!isValidEmail && <span className='pl-1 pt-1 text-xs md:text-base lg:text-md text-red-600'>Please enter a valid email!</span>}
             </div>
 
             {/* image */}
@@ -98,6 +137,26 @@ function App() {
 
           
         </section>
+
+      <Modal
+        isOpen={showThankYou}
+        onRequestClose={closeThankYouModal}
+        shouldCloseOnOverlayClick
+        shouldCloseOnEsc
+        style={customStyles}
+        contentLabel="Thank you"
+      >
+        <div className="m-5 mx-40 font-sans">
+          <header className="flex inline-flex font-bold text-4xl mb-10">
+            Thank you for signing up for
+            <Animation 
+              data={galaxy}
+              speed={.5}
+              className='w-18 h-10'
+                    /> Orbit!
+          </header>
+        </div>
+      </Modal>
 
         <hr/>
 
@@ -194,7 +253,7 @@ function App() {
           <div className='flex flex-wrap md:justify-start gap-12'>
             <ul>
               <li>
-                <div class="flex flex-row">
+                <div className="flex flex-row">
                   <Animation 
                           data={galaxy}
                           speed={.5}
